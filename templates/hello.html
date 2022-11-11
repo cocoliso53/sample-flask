@@ -1,0 +1,219 @@
+<!doctype html>
+<html>
+<head>
+    <title>Suarmi PoS</title>
+    <script src="https://unpkg.com/html5-qrcode@2.0.9/dist/html5-qrcode.min.js"></script>
+    <style>
+
+        input{
+            width: 100%;
+            border-radius: 100px;
+            border-color: #F5F5F5;
+            background-color: #F5F5F5;
+            padding-top: 3px;
+            padding-bottom: 3px;
+            text-align: center;
+            border: none;
+        }
+
+        h5{
+            text-align: center;
+        }
+
+        h1{
+            padding-top: 25px;
+            text-align: center;
+        }
+
+        #main{
+            background: #644ACF;
+            color:#f5f5f5;
+            border-radius: 100px;
+            font-family: FreeSans,Arimo,"Droid Sans",Helvetica,Arial,sans-serif;
+        }
+
+        #qr-reader{
+            border: 0px !important;
+        }
+
+        .row{
+            padding-top: 10px;
+            padding-bottom: 10px;
+            display:flex;
+            justify-content: space-evenly;
+        }
+
+        #qr-reader__dashboard_section_swaplink{
+            pointer-events: none;
+            color:#644ACF;
+        }
+
+        #qr-reader__status_span{
+            color:#644ACF !important;
+            background-color: #644ACF !important;
+        }
+
+        span a{
+            pointer-events: none;
+            color:#644ACF;
+        }
+
+        label{
+            font-family: sans-serif;
+            font-size: 20px;
+            color: #F5F5F5;
+            padding-top: 3px;
+            padding-bottom: 3px;
+        }
+
+        .pure-u-3-5{
+            width: 50%;
+        }
+
+        select{
+            background: #7159D8;
+            border-color: #7159D8;
+            text-align: center;
+            color: #69C3F5;
+            border-radius: 100px;
+            padding-top: 3px;
+            padding-bottom: 3px;
+            padding-left: 3px;
+            padding-right: 3px;
+        }
+
+        button{
+            border-radius: 100px;
+            text-align: center;
+            font-family: sans-serif;
+            background: linear-gradient(190.89deg, #69C3F5 13.77%, #1687C7 96.64%);
+            margin: 0 auto;
+            box-shadow: 0px 11px 40px rgb(98 77 184 / 59%), inset 0px -3px 10px rgb(0 0 0 / 37%), inset 3px 1px 15px rgb(255 255 255 / 50%);
+            color: #F5F5F5;
+            border: none transparent;
+            padding-top: 3px;
+            padding-bottom: 3px;
+        }
+    </style>
+</head>
+<body>
+<div class="pure-g" style="margin:auto;width:80%;" id="main">
+  <h1>Compra cripto con un SPEI</h1>
+  <form class="pure-form" method="POST" style="margin:auto;width:85%;" onsubmit='disableButton()'>
+    <div style="margin:auto;width:85%;" class="row">
+        <div class="pure-u-2-5" style="display: inline-block;">
+            <label for="from_amount">Cantidad de pesos a enviar</label>
+        </div>
+        <div class="pure-u-3-5" style="display: inline-block;">
+            <input type="number" id="from_amount" name="from_amount" style="width: 100%;" min="200" max="5000" required>
+        </div>
+    </div>
+    <div style="margin:auto;width:85%;" class="row">
+        <div class="pure-u-1-4" style="display: inline-block;">
+            <label for="to_currency">Y recibes</label>
+        </div>
+        <div class="pure-u-1-2 desactivado">
+            <input type="text" id="to_amount" name="to_amount" style="display: inline-block;background-color: #7159D8;border-color: #7159D8;color:#69C3F5" disabled required>
+        </div>
+        <div class="pure-u-1-4" style="display: inline-block;">
+            <select id="to_currency" name="to_currency" required>
+                <option value="MATIC" selected>MATIC</option>
+                <option value="WETH">WETH</option>
+                <option value="USDC">USDC</option>
+            </select>
+        </div>
+        <div class="pure-u-1-4" style="display: inline-block;">
+            <label>en la red Polygon/MATIC</label>
+        </div>
+    </div>
+    <div style="margin:auto;width:85%;" class="row">
+        <div class="pure-u-2-5" style="display: inline-block;">
+            <label for="to_address">En la wallet</label>
+        </div>
+        <div class="pure-u-3-5" style="display: inline-block;width:60%;">
+            <input type="text" id="to_address" name="to_address" required>
+        </div>
+    </div>
+    <div class="pure-g row" style="margin:auto;width:85%;">
+        <button type="submit" value="Comprar" formaction="/buy" class="pure-button" 
+        id="btn">
+            Comprar</button>
+    </div>
+  </form>
+  <div class="pure-u-1" style="padding-bottom: 10px;">
+    <h5>Usa la cámara para escanear la dirección de tu wallet</h5>
+    <h5>Request Camera Permisions -> Start Scanning</h5>
+  </div>
+  <div class="pure-u-1" id="qr-reader" style="margin:auto;width:85%;"></div>
+  <div class="pure-u-1" style="display:flex;justify-content: center;">
+    <img src="{{url_for('static', filename='blanco.png')}}" style="width:10%;"/>
+  </div>
+</div>
+<script>
+    const from_amountEl = document.getElementById('from_amount');
+    const to_amountEl = document.getElementById('to_amount');
+    const to_addressEl = document.getElementById('to_address');
+    const to_currencyEl = document.getElementById('to_currency');
+
+    from_amountEl.addEventListener('keyup',debounce( () => {
+        calculate();
+    },500));
+    to_currencyEl.addEventListener('change',calculate);
+
+    function debounce(callback, wait) {
+        let timeout;
+        return (...args) => {
+            clearTimeout(timeout);
+            timeout = setTimeout(function () { callback.apply(this, args); }, wait);
+        };
+    }
+
+    function calculate() {
+    fetch(`https://exchange.suarmi.com/exchange?from_currency=MXN&to_currency=${to_currencyEl.value}&from_amount=${from_amountEl.value}&network=MATIC`)
+	.then(res => res.json())
+	.then(data => {
+	    const to_amount = (data.to_amount * 0.99);
+	    to_amountEl.value = significantDigits(to_amount.toString());
+	    console.log(to_amount.toString())
+	    //boton.disabled = false;
+	})
+} 
+
+function significantDigits(s) {
+    let sf = s.length-10; // Works for now, better solution tbd
+    let r
+    if (s < 1) {
+	r = s.slice(0,7);
+    } else if (s < 10) {
+	r = s.slice(0,6);
+    } else if (s < 100) {
+	r = s.slice(0,7);
+    } else if (s < 1000) {
+	r = s.slice(0,6);
+    } else if (s < 10000) {
+	r = s.slice(0,7);
+    } else if (s < 100000) {
+	r = s.slice(0,7);
+    } else {
+	r = s.slice(0,sf);
+    }
+    return r;
+}
+    
+    function onScanSuccess(decodedText, decodedResult) {
+        console.log(`Code scanned = ${decodedText}`, decodedResult);
+        to_addressEl.value = decodedText;
+    }
+    
+    var html5QrcodeScanner = new Html5QrcodeScanner(
+        "qr-reader", { fps: 10, qrbox: 250 });
+        html5QrcodeScanner.render(onScanSuccess);
+
+    function disableButton() {
+        var btn = document.getElementById('btn');
+        btn.disabled = true;
+        btn.innerText = 'Procesando...'
+    }
+</script>
+</body>
+</html>

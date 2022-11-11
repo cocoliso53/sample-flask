@@ -1,0 +1,132 @@
+<!doctype html>
+<htm>
+    <head>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css" 
+        integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls" 
+        crossorigin="anonymous">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+
+            input{
+                width: 100%;
+                border-radius: 100px;
+                border-color: #F5F5F5;
+                background-color: #F5F5F5;
+                padding-top: 3px;
+                padding-bottom: 3px;
+                text-align: center;
+                border: none;
+            }
+    
+            h5{
+                text-align: center;
+            }
+    
+            h1{
+                padding-top: 25px;
+                text-align: center;
+            }
+    
+            #main{
+                background: #644ACF;
+                color:#f5f5f5;
+                border-radius: 100px;
+                font-family: FreeSans,Arimo,"Droid Sans",Helvetica,Arial,sans-serif;
+            }
+    
+            #qr-reader{
+                border: 0px !important;
+            }
+    
+            .row{
+                padding-top: 5px;
+                padding-bottom: 5px;
+                display:flex;
+                justify-content: space-evenly;
+            }
+    
+            #qr-reader__dashboard_section_swaplink{
+                pointer-events: none;
+                color:#644ACF;
+            }
+    
+            #qr-reader__status_span{
+                color:#644ACF !important;
+                background-color: #644ACF !important;
+            }
+    
+            span a{
+                pointer-events: none;
+                color:#644ACF;
+            }
+    
+            label{
+                font-family: sans-serif;
+                font-size: 20px;
+                color: #F5F5F5;
+                padding-top: 3px;
+                padding-bottom: 3px;
+            }
+    
+            .pure-u-3-5{
+                width: 50%;
+            }
+    
+            select{
+                background: #7159D8;
+                border-color: #7159D8;
+                text-align: center;
+                color: #69C3F5;
+                border-radius: 100px;
+                padding-top: 3px;
+                padding-bottom: 3px;
+            }
+    
+            .boton{
+                border-radius: 100px;
+                text-align: center;
+                font-family: sans-serif;
+                background: linear-gradient(190.89deg, #69C3F5 13.77%, #1687C7 96.64%);
+                margin: 0 auto;
+                box-shadow: 0px 11px 40px rgb(98 77 184 / 59%), inset 0px -3px 10px rgb(0 0 0 / 37%), inset 3px 1px 15px rgb(255 255 255 / 50%);
+                color: #F5F5F5;
+                border: none transparent;
+                padding-top: 10px;
+                padding-bottom: 10px;
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+        </style>
+        <title>Suarmi PoS</title>
+    </head>
+    <body>
+        <div class="pure-g" style="margin:auto;width:80%;" id="main">
+            <div class="pure-u-1 row" style="margin:auto;width:70%;">
+                <h1>¡Completa la compra!</h1>
+            </div>
+            <div class="pure-u-1 row">
+                <p>Envía <b>{{ data.from_amount }}</b> pesos</p>
+            </div>
+            <div class="pure-u-1 row">
+                <p>A la cuenta CLABE <b>{{ data.address }}</b></p>
+            </div>
+            <div class="pure-u-1 row">
+                <p>Con el concepto <b>{{ data.concepto }}</b></p>
+            </div>
+            <div class="pure-u-1 row">
+                <p>Para recibir <b>{{ data.to_amount }} {{ data.to_currency }}</b></p>
+            </div>
+            <div class="pure-u-1 row">
+                <p>En la blockchain <b>Polygon/MATIC</b></p>
+            </div>
+            <div class="pure-u-1 row">
+                <p>Que se enviaran a la wallet <b>{{ to_address }}</b></p>
+            </div>
+            <a class="boton" href="/">Nueva compra</a>
+            <div class="pure-u-1" style="display:flex;justify-content: center;">
+                <img src="{{url_for('static', filename='blanco.png')}}" style="width:10%;"/>
+            </div>
+        </div>
+    </body>
+
+</htm>
